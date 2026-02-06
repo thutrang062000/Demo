@@ -7,56 +7,68 @@
 
 <style>
 body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
     margin: 0;
     padding: 20px;
 }
 .container {
     max-width: 900px;
     margin: auto;
-    background: #fff;
+    background: #ffffff;
     padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    border-radius: 14px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.25);
 }
-h1, h2 {
+h1 {
+    text-align: center;
     color: #333;
 }
+h2 {
+    color: #444;
+    margin-top: 30px;
+}
 .section {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
+    margin-top: 20px;
+    padding-bottom: 25px;
     border-bottom: 1px solid #ddd;
 }
 label {
     display: block;
     margin-top: 10px;
-    font-weight: bold;
+    font-weight: 600;
 }
 input, select {
     width: 100%;
     padding: 8px;
     margin-top: 4px;
+    font-size: 15px;
 }
 button {
     margin-top: 15px;
-    padding: 10px 20px;
-    background: #4facfe;
-    border: none;
-    color: white;
+    padding: 10px 18px;
     font-size: 16px;
-    border-radius: 6px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
 }
 button:hover {
-    background: #007bff;
+    background: #4a5edc;
 }
 .result {
     margin-top: 10px;
+    font-size: 16px;
+    color: #2b4cff;
+}
+.warning {
+    color: #c0392b;
     font-weight: bold;
-    color: #007bff;
 }
 small {
+    display: block;
+    margin-top: 30px;
     color: #555;
 }
 </style>
@@ -64,14 +76,15 @@ small {
 
 <body>
 <div class="container">
+
 <h1>🧮 Công cụ tính lâm sàng</h1>
 
-<!-- ================== eGFR ================== -->
+<!-- ================= eGFR ================= -->
 <div class="section">
 <h2>1. Độ lọc cầu thận (eGFR)</h2>
 
 <label>Tuổi</label>
-<input type="number" id="age">
+<input type="number" id="age" min="1">
 
 <label>Giới</label>
 <select id="sex">
@@ -80,7 +93,7 @@ small {
 </select>
 
 <label>Cân nặng (kg)</label>
-<input type="number" id="weight">
+<input type="number" id="weight" min="1">
 
 <label>Creatinine huyết thanh (mg/dL)</label>
 <input type="number" step="0.01" id="creatinine">
@@ -90,7 +103,7 @@ small {
 <div class="result" id="gfrResult"></div>
 </div>
 
-<!-- ================== CHA2DS2-VASc ================== -->
+<!-- ================= CHA2DS2-VASc ================= -->
 <div class="section">
 <h2>2. CHA₂DS₂-VASc</h2>
 
@@ -98,24 +111,27 @@ small {
 <label><input type="checkbox" id="htn"> Tăng huyết áp</label>
 <label><input type="checkbox" id="dm"> Đái tháo đường</label>
 <label><input type="checkbox" id="stroke"> Đột quỵ / TIA / thuyên tắc</label>
+<label><input type="checkbox" id="vascular"> Bệnh mạch máu</label>
+
 <label>Tuổi</label>
 <input type="number" id="ageCHA">
+
 <label>Giới</label>
 <select id="sexCHA">
     <option value="male">Nam</option>
     <option value="female">Nữ</option>
 </select>
-<label><input type="checkbox" id="vascular"> Bệnh mạch máu</label>
 
 <button onclick="calcCHA()">Tính CHA₂DS₂-VASc</button>
+
 <div class="result" id="chaResult"></div>
 </div>
 
-<!-- ================== HAS-BLED ================== -->
+<!-- ================= HAS-BLED ================= -->
 <div class="section">
 <h2>3. HAS-BLED</h2>
 
-<label><input type="checkbox" id="h"> Tăng HA</label>
+<label><input type="checkbox" id="h"> Tăng huyết áp</label>
 <label><input type="checkbox" id="renal"> Suy thận</label>
 <label><input type="checkbox" id="liver"> Suy gan</label>
 <label><input type="checkbox" id="bleed"> Tiền sử chảy máu</label>
@@ -124,54 +140,64 @@ small {
 <label><input type="checkbox" id="drug"> Thuốc / rượu</label>
 
 <button onclick="calcHAS()">Tính HAS-BLED</button>
+
 <div class="result" id="hasResult"></div>
 </div>
 
 <small>
-⚠️ Chỉ mang tính hỗ trợ lâm sàng – không thay thế quyết định bác sĩ.
+⚠️ Công cụ hỗ trợ quyết định lâm sàng – không thay thế đánh giá của bác sĩ.
 </small>
 
 </div>
 
 <script>
 function calcGFR() {
-    const age = +age.value;
-    const weight = +weight.value;
-    const scr = +creatinine.value;
-    const female = sex.value === "female";
+    const age = Number(document.getElementById("age").value);
+    const weight = Number(document.getElementById("weight").value);
+    const scr = Number(document.getElementById("creatinine").value);
+    const sex = document.getElementById("sex").value;
 
-    // Cockcroft-Gault
+    if (!age || !weight || !scr) {
+        document.getElementById("gfrResult").innerHTML =
+            "<span class='warning'>Vui lòng nhập đầy đủ tuổi, cân nặng và creatinine.</span>";
+        return;
+    }
+
+    // Cockcroft–Gault
     let cg = ((140 - age) * weight) / (72 * scr);
-    if (female) cg *= 0.85;
+    if (sex === "female") cg *= 0.85;
 
     // MDRD
     let mdrd = 175 * Math.pow(scr, -1.154) * Math.pow(age, -0.203);
-    if (female) mdrd *= 0.742;
+    if (sex === "female") mdrd *= 0.742;
 
-    gfrResult.innerHTML =
-        `Cockcroft–Gault: ${cg.toFixed(1)} ml/phút<br>
-         MDRD: ${mdrd.toFixed(1)} ml/phút/1.73m²`;
+    document.getElementById("gfrResult").innerHTML =
+        `Cockcroft–Gault: <b>${cg.toFixed(1)}</b> ml/phút<br>
+         MDRD: <b>${mdrd.toFixed(1)}</b> ml/phút/1.73m²`;
 }
 
 function calcCHA() {
     let score = 0;
+
     if (hf.checked) score++;
     if (htn.checked) score++;
     if (dm.checked) score++;
     if (stroke.checked) score += 2;
     if (vascular.checked) score++;
 
-    const age = +ageCHA.value;
+    const age = Number(document.getElementById("ageCHA").value);
     if (age >= 75) score += 2;
     else if (age >= 65) score++;
 
     if (sexCHA.value === "female") score++;
 
-    chaResult.innerHTML = `CHA₂DS₂-VASc = ${score}`;
+    document.getElementById("chaResult").innerHTML =
+        `CHA₂DS₂-VASc = <b>${score}</b>`;
 }
 
 function calcHAS() {
     let score = 0;
+
     if (h.checked) score++;
     if (renal.checked) score++;
     if (liver.checked) score++;
@@ -180,7 +206,8 @@ function calcHAS() {
     if (elderly.checked) score++;
     if (drug.checked) score++;
 
-    hasResult.innerHTML = `HAS-BLED = ${score}`;
+    document.getElementById("hasResult").innerHTML =
+        `HAS-BLED = <b>${score}</b>`;
 }
 </script>
 
