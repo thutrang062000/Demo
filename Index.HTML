@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Sao cũng được</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 60px 80px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .card h1 {
+            font-size: 56px;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+
+        .card p {
+            margin-top: 16px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hiệu ứng nền nhẹ */
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+        }
+
+        .circle.one {
+            width: 300px;
+            height: 300px;
+            background: #ff9a9e;
+            top: -80px;
+            left: -80px;
+        }
+
+        .circle.two {
+            width: 350px;
+            height: 350px;
+            background: #a18cd1;
+            bottom: -100px;
+            right: -100px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="circle one"></div>
+    <div class="circle two"></div>
+
+    <div class="card">
+        <h1>Sao cũng được</h1>
+        <p>Đơn giản, nhẹ nhàng, và rất đời.</p>
+    </div>
+
+</body>
+</html>
